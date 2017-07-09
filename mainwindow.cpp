@@ -45,7 +45,7 @@ serial_obj::serial_obj()
 {
     hSerial.InitCOM(L"COM5");
     //    featureOut.resize(3);
-    featureOut.resize(4);
+    featureOut.resize(8);
     for(int i=0;i<featureOut.size();i++)
         featureOut[i]=1;
 
