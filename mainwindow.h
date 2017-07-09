@@ -42,7 +42,7 @@ public:
 
     serial_obj* SO;
     QVector<float> featureOut;
-    QwtPlot *d_plot;
+    QwtPlot *d_plot[2];
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 

@@ -36,15 +36,15 @@ WillisonAmp WA[2];
 int bufShowSize=1500;
 QTimer *timer;
 QPainter *painter;
-myCurve *curveTest[2], *curveFeature1, *curveFeature2, *curveFeature3, *curveFeature4;
-QVector <QVector<float>> dataEMG1, dataEMG2,featureEMG11, featureEMG12, featureEMG13, featureEMG14;
+myCurve *curveTest[2], *curveFeature1[2], *curveFeature2[2], *curveFeature3[2], *curveFeature4[2];
+QVector<QVector <QVector<float>>> dataEMG, featureEMG1, featureEMG2, featureEMG3, featureEMG4;
 int ind_c[2];
 
 
 serial_obj::serial_obj()
 {
     hSerial.InitCOM(L"COM5");
-//    featureOut.resize(3);
+    //    featureOut.resize(3);
     featureOut.resize(4);
     for(int i=0;i<featureOut.size();i++)
         featureOut[i]=1;
@@ -76,19 +76,19 @@ void serial_obj::doWork()
             {
                 if(ptr==1)
                 {
-                    ind_c[0]=(ind_c[0]+1)%dataEMG1[1].size();
+                    ind_c[0]=(ind_c[0]+1)%dataEMG[0][1].size();
 
                     EMG1=readVar;
 
-                    dataEMG1[1][ind_c[0]]=
+                    dataEMG[0][1][ind_c[0]]=
                             // FBH[0](
                             8*readVar;//);
 
-                    featureOut[0]=featureEMG11[1][ind_c[0]]=FE1[0](EMG1)/20;
-                    featureOut[1]=featureEMG12[1][ind_c[0]]=2.5*LPF[0](STD[0](EMG1));
-                    featureOut[2]=featureEMG13[1][ind_c[0]]=2*LPF[1](WA[0](EMG1));
-                    featureOut[3]=featureEMG14[1][ind_c[0]]=(400*LPF2[0]((killRange(MFV[0](EMG1),30))));;
-//emit(learnSig())
+                    featureOut[0]=featureEMG1[0][1][ind_c[0]]=FE1[0](EMG1)/20;
+                    featureOut[1]=featureEMG2[0][1][ind_c[0]]=2.5*LPF[0](STD[0](EMG1));
+                    featureOut[2]=featureEMG3[0][1][ind_c[0]]=2*LPF[1](WA[0](EMG1));
+                    featureOut[3]=featureEMG4[0][1][ind_c[0]]=(400*LPF2[0]((killRange(MFV[0](EMG1),30))));;
+                    //emit(learnSig())
                 }
             }
         }
@@ -99,35 +99,37 @@ void serial_obj::doWork()
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
-    d_plot = new QwtPlot(this);
-  QwtPlot* d_plot2 = new QwtPlot(this);
-    //________________________
-//    setCentralWidget(d_plot);
-    drawingInit(d_plot);
+    dataEMG.resize(2);
+    featureEMG1.resize(2);
+    featureEMG2.resize(2);
+    featureEMG3.resize(2);
+    featureEMG4.resize(2);
+    for(int i_pl=0;i_pl<2;i_pl++)
+    {
+        d_plot[i_pl] = new QwtPlot(this);
+        //________________________
+        //    setCentralWidget(d_plot);
+        drawingInit(d_plot[i_pl]);
+            d_plot[i_pl]->setAxisScale(QwtPlot::yLeft,-axisScale,axisScale);
 
-        drawingInit(d_plot2);
+        curveTest[i_pl]=new myCurve(bufShowSize, dataEMG[i_pl],d_plot[i_pl],"EMG_1",Qt::black,Qt::black,ind_c[0]);
 
-//    d_plot->setAxisScale(QwtPlot::yLeft,-axisScale,axisScale);
+        curveFeature1[i_pl]=new myCurve(bufShowSize,featureEMG1[i_pl],d_plot[i_pl],"bipolar feature1",Qt::red,Qt::black,ind_c[0]);
 
+        curveFeature2[i_pl]=new myCurve(bufShowSize, featureEMG2[i_pl],d_plot[i_pl],"force feature",Qt::green,Qt::black,ind_c[0]);
 
-    curveTest[0]=new myCurve(bufShowSize, dataEMG1,d_plot,"EMG_1",Qt::black,Qt::black,ind_c[0]);
+        curveFeature3[i_pl]=new myCurve(bufShowSize, featureEMG3[i_pl],d_plot[i_pl],"Willison's feature2",Qt::blue,Qt::black,ind_c[0]);
 
-    curveFeature1=new myCurve(bufShowSize,featureEMG11,d_plot,"bipolar feature1",Qt::red,Qt::black,ind_c[0]);
-
-    curveFeature2=new myCurve(bufShowSize, featureEMG12,d_plot,"force feature",Qt::green,Qt::black,ind_c[0]);
-
-    curveFeature3=new myCurve(bufShowSize, featureEMG13,d_plot,"Willison's feature2",Qt::blue,Qt::black,ind_c[0]);
-
-    curveFeature4=new myCurve(bufShowSize, featureEMG14,d_plot,"bipolar feature2",Qt::red,Qt::black,ind_c[0]);
-
+        curveFeature4[i_pl]=new myCurve(bufShowSize, featureEMG4[i_pl],d_plot[i_pl],"bipolar feature2",Qt::red,Qt::black,ind_c[0]);
+    }
 
 
     QGridLayout* GL=new QGridLayout();
     QWidget *centralWidget1=new QWidget();
     centralWidget1->setLayout(GL);
 
-    GL->addWidget(d_plot,1,1);
-    GL->addWidget(d_plot2,2,1);
+    GL->addWidget(d_plot[0],1,1);
+    GL->addWidget(d_plot[1],2,1);
 
     setCentralWidget(centralWidget1);
 
@@ -141,7 +143,7 @@ MainWindow::MainWindow(QWidget *parent) :
     SO=new serial_obj();
     SO->moveToThread(thread);
 
-//    connect(this,SIGNAL(featureOutSignal(QVector<float>)),this,SLOT(getFeature(QVector<float>)));
+    //    connect(this,SIGNAL(featureOutSignal(QVector<float>)),this,SLOT(getFeature(QVector<float>)));
     connect(thread,SIGNAL(started()),SO,SLOT(doWork()));
     thread->start();
 
@@ -153,14 +155,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::drawing()
 {
-    curveTest[0]->signalDrawing();
-    curveFeature1->signalDrawing();
-    curveFeature2->signalDrawing();
-    curveFeature3->signalDrawing();
-    curveFeature4->signalDrawing();
-
+    for(int p_ind=0;p_ind<2;p_ind++)
+    {
+        curveTest[p_ind]->signalDrawing();
+        curveFeature1[p_ind]->signalDrawing();
+        curveFeature2[p_ind]->signalDrawing();
+        curveFeature3[p_ind]->signalDrawing();
+        curveFeature4[p_ind]->signalDrawing();
+    }
     featureOut=SO->featureOut;
-//    qDebug()<<SO->featureOut[0];
+    //    qDebug()<<SO->featureOut[0];
     emit featureOutSignal(featureOut);
 }
 
@@ -227,7 +231,7 @@ void MainWindow::drawingInit(QwtPlot* d_plot)
 
 MainWindow::~MainWindow()
 {
-//    delete ui;
+    //    delete ui;
 }
 
 
