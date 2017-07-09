@@ -19,7 +19,7 @@ using namespace std;
 
 QThread* thread;
 Serial hSerial;
-int readVar;
+
 int axisScale=10000;
 
 int8_t EMG1;
@@ -64,9 +64,11 @@ void serial_obj::doWork()
         if(readVarON)
         {
             int presc=3;
+            gottenVar[1]=gottenVar[0];
+            gottenVar[0]=readVar;
             ptr++;
             ptr%=presc;
-            if((readVar!=2)&&(ptr==0))
+            if(((gottenVar[0]!=2)&&(gottenVar[0]!=1))&&(ptr==0))
             {
                 //alert!!!
                 ptr++;
@@ -74,7 +76,7 @@ void serial_obj::doWork()
             }
             else
             {
-                if(ptr==1)
+                if((ptr==1)&&(gottenVar[1]==1))
                 {
                     ind_c[0]=(ind_c[0]+1)%dataEMG[0][1].size();
 
@@ -90,6 +92,23 @@ void serial_obj::doWork()
                     featureOut[3]=featureEMG4[0][1][ind_c[0]]=(400*LPF2[0]((killRange(MFV[0](EMG1),30))));;
                     //emit(learnSig())
                 }
+                if((ptr==1)&&(gottenVar[1]==2))
+                {
+                    ind_c[1]=(ind_c[1]+1)%dataEMG[1][1].size();
+
+                    EMG1=readVar;
+
+                    dataEMG[1][1][ind_c[1]]=
+                            // FBH[0](
+                            8*readVar;//);
+
+                    featureOut[4]=featureEMG1[1][1][ind_c[1]]=FE1[1](EMG1)/20;
+                    featureOut[5]=featureEMG2[1][1][ind_c[1]]=2.5*LPF[2](STD[1](EMG1));
+                    featureOut[6]=featureEMG3[1][1][ind_c[1]]=2*LPF[3](WA[1](EMG1));
+                    featureOut[7]=featureEMG4[1][1][ind_c[1]]=(400*LPF2[1]((killRange(MFV[1](EMG1),30))));;
+                    //emit(learnSig())
+                }
+
             }
         }
     }
@@ -112,15 +131,15 @@ MainWindow::MainWindow(QWidget *parent) :
         drawingInit(d_plot[i_pl]);
             d_plot[i_pl]->setAxisScale(QwtPlot::yLeft,-axisScale,axisScale);
 
-        curveTest[i_pl]=new myCurve(bufShowSize, dataEMG[i_pl],d_plot[i_pl],"EMG_1",Qt::black,Qt::black,ind_c[0]);
+        curveTest[i_pl]=new myCurve(bufShowSize, dataEMG[i_pl],d_plot[i_pl],"EMG_1",Qt::black,Qt::black,ind_c[i_pl]);
 
-        curveFeature1[i_pl]=new myCurve(bufShowSize,featureEMG1[i_pl],d_plot[i_pl],"bipolar feature1",Qt::red,Qt::black,ind_c[0]);
+        curveFeature1[i_pl]=new myCurve(bufShowSize,featureEMG1[i_pl],d_plot[i_pl],"bipolar feature1",Qt::red,Qt::black,ind_c[i_pl]);
 
-        curveFeature2[i_pl]=new myCurve(bufShowSize, featureEMG2[i_pl],d_plot[i_pl],"force feature",Qt::green,Qt::black,ind_c[0]);
+        curveFeature2[i_pl]=new myCurve(bufShowSize, featureEMG2[i_pl],d_plot[i_pl],"force feature",Qt::green,Qt::black,ind_c[i_pl]);
 
-        curveFeature3[i_pl]=new myCurve(bufShowSize, featureEMG3[i_pl],d_plot[i_pl],"Willison's feature2",Qt::blue,Qt::black,ind_c[0]);
+        curveFeature3[i_pl]=new myCurve(bufShowSize, featureEMG3[i_pl],d_plot[i_pl],"Willison's feature2",Qt::blue,Qt::black,ind_c[i_pl]);
 
-        curveFeature4[i_pl]=new myCurve(bufShowSize, featureEMG4[i_pl],d_plot[i_pl],"bipolar feature2",Qt::red,Qt::black,ind_c[0]);
+        curveFeature4[i_pl]=new myCurve(bufShowSize, featureEMG4[i_pl],d_plot[i_pl],"bipolar feature2",Qt::red,Qt::black,ind_c[i_pl]);
     }
 
 
