@@ -40,6 +40,10 @@
     //QObject::connect(&KW.learnB1,SIGNAL(released()),&KW,SLOT(learning_1()));
     QObject::connect((KW.L_E),SIGNAL(editingFinished()),&KW,SLOT(pushString()));
     QObject::connect(&KW,SIGNAL(pushStringS(QString)),&SignalMW,SLOT(reconnect(QString)));
+
+    KohonenMW.setWindowTitle("Kohonen hex-top Map");
+    SignalMW.setWindowTitle("Myographic signals");
+
     KohonenMW.show();
     SignalMW.show();
     //    w.kohonenWidget->show();

@@ -10,8 +10,9 @@ public:
     QVector<float> featureOut;
     int ptr;
     serial_obj(QString);
+    void init(QString);
     ~serial_obj();
-    close();
+    void close();
 public slots:
     void doWork();
 };
