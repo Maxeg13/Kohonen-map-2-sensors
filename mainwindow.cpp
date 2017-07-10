@@ -3,10 +3,11 @@
 #include "ui_mainwindow.h"
 #include "drawing.h"
 #include "headers.h"
-
+//#include ""
 #include "stdafx.h"
 #include "targetver.h"
 #include <Windows.h>
+
 
 #include "layer_koh.h"
 #include "serial.h"
@@ -41,14 +42,23 @@ QVector<QVector <QVector<float>>> dataEMG, featureEMG1, featureEMG2, featureEMG3
 int ind_c[2];
 
 
-serial_obj::serial_obj()
+
+serial_obj::serial_obj(QString qstr)
 {
-    hSerial.InitCOM(L"COM5");
+    std::string str1=qstr.toUtf8().constData();;
+    std::wstring str(str1.begin(),str1.end());
+
+    hSerial.InitCOM(str.c_str());//was L"COM5"
     //    featureOut.resize(3);
     featureOut.resize(8);
     for(int i=0;i<featureOut.size();i++)
         featureOut[i]=1;
 
+}
+
+serial_obj::close()
+{
+    hSerial.close();
 }
 serial_obj::~serial_obj()
 {};
@@ -115,6 +125,7 @@ void serial_obj::doWork()
 }
 
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
@@ -159,7 +170,7 @@ MainWindow::MainWindow(QWidget *parent) :
     timer->start(40);
 
     QThread* thread = new QThread( );
-    SO=new serial_obj();
+    SO=new serial_obj("COM5");
     SO->moveToThread(thread);
 
     //    connect(this,SIGNAL(featureOutSignal(QVector<float>)),this,SLOT(getFeature(QVector<float>)));
@@ -190,6 +201,14 @@ void MainWindow::drawing()
 void MainWindow::getFeature(QVector<float> x)
 {
     qDebug()<<x[0];
+}
+
+void MainWindow::reconnect(QString s)
+{
+qDebug()<<s;
+SO->close();
+delete SO;
+SO=new serial_obj(s);
 }
 
 

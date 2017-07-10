@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #include "kohonenwidget.h"
+#include "serialqobj.h"
 #include "headers.h"
 
 //#include "serial.h"
@@ -10,23 +11,6 @@
 //#define SetWindowText SetWindowTextA
 //#endif
 
-
-
-
-
-class serial_obj : public QObject
-{
-Q_OBJECT
-    public:
-    int readVar;
-    int gottenVar[2];
-    QVector<float> featureOut;
-    int ptr;
-    serial_obj();
-    ~serial_obj();
-public slots:
-    void doWork();
-};
 
 
 
@@ -50,12 +34,14 @@ public:
 
     void drawingInit(QwtPlot *d_plot);
 private:
-//    Ui::MainWindow *ui;
+    //    Ui::MainWindow *ui;
 
     void paintEvent(QPaintEvent *e);
 public slots:
     void drawing();
     void getFeature(QVector<float>);
+    void reconnect(QString);
+
 signals:
     void featureOutSignal(QVector<float>);
     void sended();

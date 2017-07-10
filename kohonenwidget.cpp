@@ -65,6 +65,10 @@ void KohonenWidget::drawing()
     update();
 }
 
+void KohonenWidget::pushString()
+{
+   emit(pushStringS(L_E->text()));
+}
 
 void KohonenWidget::paintEvent(QPaintEvent *e)
 {
@@ -88,7 +92,8 @@ void KohonenWidget::refresh(QVector<float> inp)
 
 KohonenWidget::KohonenWidget(QWidget *parent):QWidget(parent)
 {
-
+    L_E=new QLineEdit("COM5");
+//    L_E->setText("COM5");
     learnB1=new QPushButton("learn weak");
     learnB2=new QPushButton("learn 1");
     learnB3=new QPushButton("learn 2");
@@ -99,14 +104,14 @@ KohonenWidget::KohonenWidget(QWidget *parent):QWidget(parent)
     data_learn.resize(5);
     for(int i=0;i<data_learn.size();i++)
         data_learn[i].resize(8);
-    data_learn[0][0]=200;
-    data_learn[0][1]=100;
-    data_learn[0][2]=100;
-    data_learn[0][3]=100;
-    data_learn[0][4]=200;
-    data_learn[0][5]=100;
-    data_learn[0][6]=100;
-    data_learn[0][7]=100;
+    data_learn[0][0]=1;
+    data_learn[0][1]=1;
+    data_learn[0][2]=1;
+    data_learn[0][3]=1;
+    data_learn[0][4]=2;
+    data_learn[0][5]=1;
+    data_learn[0][6]=1;
+    data_learn[0][7]=1;
     data_learn[1]=data_learn[0];
     data_learn[2]=data_learn[0];
     data_learn[3]=data_learn[0];

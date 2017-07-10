@@ -1,8 +1,12 @@
-#include "serial.h"
-#include "stdafx.h"
+#include "../serial.h"
+#include "../stdafx.h"
 #include <Windows.h>
-#include "targetver.h"
-void Serial::InitCOM(LPCTSTR sPortName)
+#include "../targetver.h"
+void Serial::close()
+{
+    CloseHandle(hSerial);
+}
+void Serial::InitCOM(const wchar_t* sPortName)
 {
 
 
@@ -27,7 +31,7 @@ void Serial::InitCOM(LPCTSTR sPortName)
     DWORD dwBytesWritten;
     LPOVERLAPPED ov;
 
-    BOOL iRet = WriteFile (hSerial,data,dwSize,&dwBytesWritten ,NULL);
+//    BOOL iRet = WriteFile (hSerial,data,dwSize,&dwBytesWritten ,NULL);
 }
 
 char Serial::ReadCOM(bool& ON)
