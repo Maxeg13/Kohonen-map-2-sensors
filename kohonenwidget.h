@@ -15,6 +15,7 @@ QLineEdit *L_E;
     QPushButton *learnB3;
     QPushButton *learnB4;
     QPushButton *learnB5;
+    QPushButton *learnB6;
     QPushButton *rstLearningB;
     layer_koh *LK;
     QTimer *timer;
@@ -32,6 +33,7 @@ public slots:
     void learning_3();
     void learning_4();
     void learning_5();
+    void learning_6();
 //    void pushString(QString);
     void pushString();
 protected:

@@ -106,8 +106,8 @@ void serial_obj::doWork()
                             8*readVar;//);
 
                     featureOut[0]=featureEMG1[0][1][ind_c[0]]=FE1[0](EMG1)/20;
-                    featureOut[1]=featureEMG2[0][1][ind_c[0]]=2.5*LPF[0](STD[0](EMG1));
-                    featureOut[2]=featureEMG3[0][1][ind_c[0]]=2*LPF[1](WA[0](EMG1));
+                    featureOut[1]=featureEMG2[0][1][ind_c[0]]=LPF[0](STD[0](EMG1));
+                    featureOut[2]=featureEMG3[0][1][ind_c[0]]=LPF[1](WA[0](EMG1));
                     featureOut[3]=featureEMG4[0][1][ind_c[0]]=(400*LPF2[0]((killRange(MFV[0](EMG1),30))));;
                     //emit(learnSig())
                 }
@@ -122,8 +122,8 @@ void serial_obj::doWork()
                             8*readVar;//);
 
                     featureOut[4]=featureEMG1[1][1][ind_c[1]]=FE1[1](EMG1)/20;
-                    featureOut[5]=featureEMG2[1][1][ind_c[1]]=2.5*LPF[2](STD[1](EMG1));
-                    featureOut[6]=featureEMG3[1][1][ind_c[1]]=2*LPF[3](WA[1](EMG1));
+                    featureOut[5]=featureEMG2[1][1][ind_c[1]]=LPF[2](STD[1](EMG1));
+                    featureOut[6]=featureEMG3[1][1][ind_c[1]]=LPF[3](WA[1](EMG1));
                     featureOut[7]=featureEMG4[1][1][ind_c[1]]=(400*LPF2[1]((killRange(MFV[1](EMG1),30))));;
                     //emit(learnSig())
                 }
